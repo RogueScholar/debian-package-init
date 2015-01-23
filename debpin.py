@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 import os
 import subprocess
 
-from deb_create_watch import detect_hosting_service, write_file
+from deb_create_watch import detect_hosting_service, write_watch_file
 
 
 def parse_args():
@@ -35,8 +35,9 @@ def main():
 
     create_git_repo(args.pkg_name)
     os.mkdir('debian')
-    write_file('debian/watch', watch)
-    run_cmd('/usr/bin/dch', '--create', "--package", args.pkg_name, '--empty', '-v', '0.0.0-1')
+    write_watch_file(watch)
+    run_cmd('/usr/bin/dch', '--create', "--package", args.pkg_name, '--empty',
+            '-v', '0.0.0-1')
     run_cmd('/usr/bin/git', 'import-orig', '--uscan', '-v', '--no-interactive')
     os.unlink('debian/changelog')
     run_cmd('/usr/bin/debdry')

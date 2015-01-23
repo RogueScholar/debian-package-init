@@ -2,8 +2,6 @@
 
 from argparse import ArgumentParser
 import re
-import subprocess
-
 
 # debian/watch templates based on https://wiki.debian.org/debian/watch
 
@@ -20,7 +18,6 @@ https://metacpan.org/release/{project} .*/{project}-v?(\d[\d.]+)\.(?:tar(?:\.gz|
     'pypi.python.org/pypi/(?P<project>[\w\-]*)': """
 https://pypi.python.org/packages/source/{project_first_letter}/{project}/{project}-(\d\S*)\.tar\.gz
 """,
-#https://pypi.python.org/packages/source/{project_first_letter}/{project}/{project}-(\d\S*)\.(?:tgz|tar\.(?:gz|bz2|xz))
 
     'code.google.com/p/(?P<project>[\w\-]*)': """
 http://code.google.com/p/{project}/downloads/list?can=1 .*/{project}-(\d\S*)\.(?:zip|tgz|tbz|txz|(?:tar\.(?:gz|bz2|xz)))
@@ -39,12 +36,18 @@ https://launchpad.net/{project}/+download .*/{project}-(.*).tar.gz
 """,
 
     'codingteam.net/project/(?P<project>[\w\-]*)': """
-    https://codingteam.net/project/{project}/download project/{project}/download/file/{project}-(\d\S*).tar.gz
+https://codingteam.net/project/{project}/download project/{project}/download/file/{project}-(\d\S*).tar.gz
     """
 }
 
 
-def detect_hosting_service(url):
+def detect_hosting_service(url, pkg_name=None):
+    """Detect well-known hosting service
+
+    :param url: project URL
+    :param pkg_name: optional package name
+    :returns: proposed project name (str), watch file contents (str)
+    """
 
     if not url.startswith(('http://', 'https://')):
         raise Exception("Unknown protocol in URL")
@@ -65,7 +68,7 @@ def detect_hosting_service(url):
     d = match.groupdict()
     d['url'] = url
     d['project_first_letter'] = d['project'][0]
-    d['pkgname'] = d['project'].lower()
+    d['pkgname'] = pkg_name or d['project'].lower()
 
     proposed_project_name = url.split('/')[-1]
     watch = watch_tpl.format(**d)
@@ -74,8 +77,8 @@ def detect_hosting_service(url):
     return proposed_project_name, watch
 
 
-def write_file(fname, contents):
-    with open(fname, 'w') as f:
+def write_watch_file(contents):
+    with open('debian/watch', 'w') as f:
         f.write(contents)
 
 
@@ -88,8 +91,9 @@ def parse_args():
 
 def main():
     args = parse_args()
-    proposed_project_name, watch = detect_hosting_service(args.url)
-    write_file('debian/watch', watch)
+    proposed_project_name, watch = detect_hosting_service(args.url,
+                                                          args.pkg_name)
+    write_watch_file(watch)
 
 
 if __name__ == '__main__':
