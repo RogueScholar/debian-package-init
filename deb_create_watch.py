@@ -4,6 +4,7 @@ from argparse import ArgumentParser
 import re
 
 # debian/watch templates based on https://wiki.debian.org/debian/watch
+# and https://wiki.debian.org/Python/LibraryStyleGuide
 
 watch_templates = {
     'github.com/(?P<user>[\w\-]*)/(?P<project>[\w\-]*)': """
@@ -16,7 +17,8 @@ https://metacpan.org/release/{project} .*/{project}-v?(\d[\d.]+)\.(?:tar(?:\.gz|
 """,
 
     'pypi.python.org/pypi/(?P<project>[\w\-]*)': """
-https://pypi.python.org/packages/source/{project_first_letter}/{project}/{project}-(\d\S*)\.tar\.gz
+opts=uversionmangle=s/(rc|a|b|c)/~$1/ \
+http://pypi.debian.net/{project}/{project}-(.+)\.(?:zip|tgz|tbz|txz|(?:tar\.(?:gz|bz2|xz)))
 """,
 
     'code.google.com/p/(?P<project>[\w\-]*)': """
