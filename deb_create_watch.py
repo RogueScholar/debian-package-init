@@ -1,7 +1,10 @@
 #!/usr/bin/env python2
 
 from argparse import ArgumentParser
+import logging
 import re
+
+log = logging.getLogger(__name__)
 
 # debian/watch templates based on https://wiki.debian.org/debian/watch
 # and https://wiki.debian.org/Python/LibraryStyleGuide
@@ -73,6 +76,9 @@ def detect_hosting_service(url, pkg_name=None):
     d['pkgname'] = pkg_name or d['project'].lower()
 
     proposed_project_name = url.split('/')[-1]
+    log.debug("Package name: %s", d['pkgname'])
+    log.debug("Project full name: %s", proposed_project_name)
+    log.debug("Project name: %s", proposed_project_name)
     watch = watch_tpl.format(**d)
     watch = "version=3\n%s" % watch
 
