@@ -19,7 +19,7 @@ opts=filenamemangle=s/.+\/v?(\d\S*)\.tar\.gz/{pkgname}-$1\.tar\.gz/ \\
 https://metacpan.org/release/{project} .*/{project}-v?(\d[\d.]+)\.(?:tar(?:\.gz|\.bz2)?|tgz|zip)$
 """,
 
-    'pypi.python.org/pypi/(?P<project>[\w\-]*)': """
+    'pypi.python.org/pypi/(?P<project>[\w\.\-]*)': """
 opts=uversionmangle=s/(rc|a|b|c)/~$1/ \
 http://pypi.debian.net/{project}/{project}-(.+)\.(?:zip|tgz|tbz|txz|(?:tar\.(?:gz|bz2|xz)))
 """,
