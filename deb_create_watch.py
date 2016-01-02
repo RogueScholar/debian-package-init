@@ -42,7 +42,11 @@ https://launchpad.net/{project}/+download .*/{project}-(.*).tar.gz
 
     'codingteam.net/project/(?P<project>[\w\-]*)': """
 https://codingteam.net/project/{project}/download project/{project}/download/file/{project}-(\d\S*).tar.gz
-    """
+    """,
+    'gitlab.com/(?P<user>[\w\-]*)/(?P<project>[\w\-]*)': """
+    opts=filenamemangle=s/.*\.tar\.gz\?ref=v?(\d\S*)/{project}-$1\.tar\.gz/g \
+  https://gitlab.com/{user}/{project}/tags .*archive\.tar\.gz\?ref=v?(\d\S*)
+""",
 }
 
 
